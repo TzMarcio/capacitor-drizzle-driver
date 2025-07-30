@@ -1,0 +1,31 @@
+{
+  "name": "capacitor-drizzle-driver",
+  "version": "1.0.0",
+  "description": "Driver personalizado Drizzle ORM para uso com @capacitor-community/sqlite",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "drizzle",
+    "capacitor",
+    "sqlite",
+    "orm",
+    "ionic",
+    "typescript"
+  ],
+  "author": "Márcio Lima",
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "@capacitor/core": "^7.4.2",
+    "@capacitor-community/sqlite": "^7.0.1",
+    "drizzle-orm": "^0.44.3"
+  }
+}
