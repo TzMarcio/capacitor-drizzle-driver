@@ -1,5 +1,8 @@
 # capacitor-drizzle-driver
 
+![npm version](https://img.shields.io/npm/v/capacitor-drizzle-driver?style=flat-square)
+![npm downloads](https://img.shields.io/npm/dm/capacitor-drizzle-driver?style=flat-square)
+
 Integration between Drizzle ORM and SQLite in Capacitor.
 
 ## Project Overview

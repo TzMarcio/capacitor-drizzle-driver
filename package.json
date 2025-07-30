@@ -1,6 +1,6 @@
 {
   "name": "capacitor-drizzle-driver",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Driver personalizado Drizzle ORM para uso com @capacitor-community/sqlite",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,6 +19,14 @@
   "author": "Márcio Lima",
   "license": "MIT",
   "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TzMarcio/capacitor-drizzle-driver.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TzMarcio/capacitor-drizzle-driver/issues"
+  },
+  "homepage": "https://github.com/TzMarcio/capacitor-drizzle-driver#readme",
   "devDependencies": {
     "@types/node": "^24.1.0",
     "typescript": "^5.8.3"
