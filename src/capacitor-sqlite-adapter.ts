@@ -76,7 +76,7 @@ export function capacitorSqliteDriver(
  */
 export function drizzleCapacitor<TSchema extends Record<string, unknown>>(
   db: string,
-  migrations?: Record<string, string>,
+  migrations?: Record<string, string[]>,
   config?: DrizzleConfig<TSchema>
 ): CapacitorSqliteRemoteDatabase<TSchema> {
   // Initialize the driver and migration manager

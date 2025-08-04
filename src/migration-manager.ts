@@ -5,7 +5,7 @@ import { CapacitorSqliteDriver } from "./capacitor-sqlite-driver";
  */
 export class MigrationManager {
   private readonly driver: CapacitorSqliteDriver;
-  private readonly migrations: Record<string, string> | undefined;
+  private readonly migrations: Record<string, string[]> | undefined;
   private static readonly MIGRATIONS_TABLE = '_migrations';
 
   /**
@@ -14,7 +14,7 @@ export class MigrationManager {
    * @param driver - The SQLite driver to use for database operations
    * @param migrations - A record of migration names to SQL queries
    */
-  constructor(driver: CapacitorSqliteDriver, migrations?: Record<string, string>) {
+  constructor(driver: CapacitorSqliteDriver, migrations?: Record<string, string[]>) {
     this.driver = driver;
     this.migrations = migrations;
   }
@@ -67,10 +67,14 @@ export class MigrationManager {
    */
   private async applyMigration(migrationName: string): Promise<void> {
     this.logInfo(`Applying migration ${migrationName}...`);
-    const migrationQuery = this.migrations![migrationName];
+    const querys = this.migrations![migrationName];
 
     await this.executeInTransaction(async () => {
-      await this.driver.execute(migrationQuery);
+
+      for (const migrationQuery of querys) {
+        await this.driver.execute(migrationQuery);
+      }
+
       await this.markMigrationAsApplied(migrationName);
       this.logInfo(`Migration ${migrationName} applied successfully`);
     });

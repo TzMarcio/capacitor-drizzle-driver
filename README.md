@@ -116,16 +116,16 @@ import { drizzleCapacitor } from 'capacitor-drizzle-driver';
 
 // Define migrations
 const migrations = {
-  'v1': `
+  'v1': [`
     CREATE TABLE users (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
       age INTEGER
     );
-  `,
-  'v2': `
+  `],
+  'v2': [`
     ALTER TABLE users ADD COLUMN email TEXT;
-  `
+  `]
 };
 
 // Initialize with migrations
