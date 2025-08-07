@@ -9,6 +9,13 @@ export class CapacitorSqliteDriver {
   private readonly sqlite: SQLiteConnection;
   private readonly dbName: string;
 
+  private static readonly SYSTEM_TABLES_PATTERN = 'sqlite_%';
+  private static readonly MIGRATIONS_TABLE = '_migrations';
+  private static readonly FOREIGN_KEYS_COMMANDS = {
+    DISABLE: 'PRAGMA foreign_keys = OFF;',
+    ENABLE: 'PRAGMA foreign_keys = ON;'
+  } as const;
+
   constructor(dbName: string) {
     this.sqlite = new SQLiteConnection(CapacitorSQLite);
     this.dbName = dbName;
@@ -137,6 +144,56 @@ export class CapacitorSqliteDriver {
   }
 
   /**
+  * Truncates all non-system and non-migration tables in the database.
+  * This operation will:
+  * 1. Temporarily disable foreign key constraints
+  * 2. Query for all user tables (excluding system and migration tables)
+  * 3. Delete all records from the found tables
+  * 4. Reset auto-increment sequences
+  * 5. Re-enable foreign key constraints
+  * @throws {Error} If truncation fails for any reason
+  */
+  async truncateTables(): Promise<void> {
+
+      try {
+          // Disable foreign key constraints before truncating
+          await this.run(CapacitorSqliteDriver.FOREIGN_KEYS_COMMANDS.DISABLE, [], false);
+
+          // Get list of all user tables (excluding system tables and migrations)
+          const result: any[] = await this.query(`
+              SELECT name
+              FROM sqlite_master
+              WHERE type = 'table'
+                AND name NOT LIKE '${CapacitorSqliteDriver.SYSTEM_TABLES_PATTERN}'
+                AND name != '${CapacitorSqliteDriver.MIGRATIONS_TABLE}';
+          `)
+
+          // Extract table names from query result
+          const tableNames: string[] = result.map((row: any) => row.name) ?? [];
+
+          // Generate DELETE queries for each table and its sequence
+          const querys = tableNames.flatMap((tableName) => [
+              `DELETE
+               FROM "${tableName}";`,
+              `DELETE
+               FROM sqlite_sequence
+               WHERE name = '${tableName}';`
+          ]);
+
+          // Execute all DELETE queries in batch
+          await this.batch(querys);
+
+          // Re-enable foreign key constraints
+          await this.run(CapacitorSqliteDriver.FOREIGN_KEYS_COMMANDS.ENABLE, [], false);
+
+      } catch (error) {
+          console.error('Failed to truncate tables:', error);
+          throw error;
+      }
+
+  }
+
+  /**
    * Main method called by Drizzle proxy
    * @param sql - SQL statement to execute
    * @param params - Parameters for the statement
@@ -160,7 +217,7 @@ export class CapacitorSqliteDriver {
 
         case "all": {
           const result = await this.query(sql, params);
-          return { rows: result || [] };
+          return { rows: (result || []).map((row: Record<string, any>) => Object.values(row)) };
         }
 
         case "values": {
@@ -173,7 +230,7 @@ export class CapacitorSqliteDriver {
         case "get": {
           const result = await this.query(sql, params);
           const firstRow = result?.[0];
-          return { rows: firstRow ? [firstRow] : [] };
+          return { rows: (firstRow ? [firstRow] : []).map((row: Record<string, any>) => Object.values(row)) };
         }
 
         default:

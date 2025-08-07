@@ -17,4 +17,10 @@ export interface CapacitorSqliteRemoteDatabase<TSchema extends Record<string, un
      * Current availability state of the database
      */
     isAvailable: boolean;
+
+    /**
+     * Truncates all non-system and non-migration tables in the database
+     */
+    truncateTables: () => Promise<void>;
+    
 }

@@ -102,6 +102,9 @@ export function drizzleCapacitor<TSchema extends Record<string, unknown>>(
     listeners.push(callback);
   };
 
+    // Assigns the truncateTables method to the instance, which delegates to the driver's truncateTables method
+    instance.truncateTables = () => driver.truncateTables();
+
   // Initialize the database and apply migrations
   driver.init().then(async () => {
     await migration.applyMigrations();
