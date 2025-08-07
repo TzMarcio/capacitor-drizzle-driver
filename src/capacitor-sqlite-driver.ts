@@ -230,7 +230,7 @@ export class CapacitorSqliteDriver {
         case "get": {
           const result = await this.query(sql, params);
           const firstRow = result?.[0];
-          return { rows: (firstRow ? [firstRow] : []).map((row: Record<string, any>) => Object.values(row)) };
+          return { rows: firstRow ? Object.values(firstRow) : [] };
         }
 
         default:
